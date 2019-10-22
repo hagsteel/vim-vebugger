@@ -304,17 +304,28 @@ endfunction
 let s:breakpoint_text = get(g:, 'vebugger_breakpoint_text', '->')
 let s:currentline_text = get(g:, 'vebugger_currentline_text', '**')
 
+let s:currentline = 'sign define vebugger_current text=' . s:currentline_text
 if hlexists("DebuggedLine")
-  sign define vebugger_current linehl=DebuggedLine
-else
-  execute 'sign define vebugger_current text=' . s:currentline_text
+    let s:currentline = s:currentline . ' linehl=DebuggedLine'
 endif
+if hlexists("DebuggedLineSign")
+    let s:currentline = s:currentline . ' texthl=DebuggedLineSign'
+endif
+execute s:currentline
 
+let s:breakpoint = 'sign define vebugger_breakpoint text=' . s:breakpoint_text 
 if hlexists('BreakPoint')
-    execute 'sign define vebugger_breakpoint text=' . s:breakpoint_text . ' linehl=BreakPoint texthl=BreakPoint'
+    let s:breakpoint = s:breakpoint . ' linehl=BreakPoint'
+    " texthl=BreakPoint'
 else
-    execute 'sign define vebugger_breakpoint text=' . s:breakpoint_text . ' linehl=ColorColumn texthl=ColorColumn'
+    let s:breakpoint = s:breakpoint . ' linehl=ColorColumn'
 endif
+if hlexists('BreakPointSign')
+    let s:breakpoint = s:breakpoint . ' texthl=BreakPointSign'
+else
+    let s:breakpoint = s:breakpoint . ' texthl=ColorColumn'
+endif
+execute s:breakpoint
 
 "Update all the marks(currently executed line and breakpoints) for a file
 function! vebugger#std#updateMarksForFile(state,filename)
